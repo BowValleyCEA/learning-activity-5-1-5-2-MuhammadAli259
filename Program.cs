@@ -1,46 +1,75 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-Console.WriteLine("Hello, World!");
-LearningActivity5_1();
-return;
-
-void LearningActivity5_1()
+﻿using System;
+using System.Collections.Generic;
+public class HighScore
 {
-    Random randomScore = new Random();
-    while (true)
+    public string Initials { get; set; }
+    public int Score { get; set; }
+    public HighScore(string initials, int score)
     {
-        GameSelection choice = ChooseOption();
-        //int newHighScore = randomScore.Next(1000, 1000000);
-        //Console.WriteLine($"You finished with a score of {newHighScore}");
-        //if the player 
-
+        Initials = initials;
+        Score = score;
+    }
+    public override string ToString()
+    {
+        return $"{Initials} - {Score}";
     }
 }
 
-GameSelection ChooseOption()
+class Program
 {
-    bool validSelection = false;
-    int selection = 0;
-    while (!validSelection)
+    static List<HighScore> scores = new();
+    static void Main(string[] args)
     {
-        Console.WriteLine(
-            "Would you like to:\n\t 1: Play again\n\t 2: See the list of high scores\n\t 3: Exit the game?");
-
-        if (int.TryParse(Console.ReadLine(), out selection) && selection >= 1 && selection <= 3)
-            validSelection = true;
-
+        bool running = true;
+        while (running)
+        {
+            Console.WriteLine("\nPac-Man High Score Board");
+            Console.WriteLine("1. Add Score");
+            Console.WriteLine("2. View Scores");
+            Console.WriteLine("3. Quit");
+            Console.Write("Pick an option: ");
+            string choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "1":
+                    AddScore(); break;
+                case "2":
+                    ViewScores(); break;
+                case "3":
+                    running = false; Console.WriteLine("Bye!"); break;
+                default:
+                    Console.WriteLine("Oops, wrong choice. Try again."); break;
+            }
+        }
     }
-
-    return (GameSelection)selection;
-
-}
-//Be kind, rewind.
-void LearningActivity5_2()
-{
-
-}
-
-enum GameSelection
-{
-    Play = 1, SeeHighScore = 2, Exit = 3
+    static void AddScore()
+    {
+        Console.Write("Your initials (3 letters): ");
+        string initials = Console.ReadLine()?.ToUpper();
+        if (string.IsNullOrWhiteSpace(initials) || initials.Length != 3)
+        {
+            Console.WriteLine("Use exactly 3 letters."); return;
+        }
+        Console.Write("Your score: ");
+        if (int.TryParse(Console.ReadLine(), out var score))
+        {
+            scores.Add(new HighScore(initials, score));
+            Console.WriteLine("Score added!");
+        }
+        else
+        {
+            Console.WriteLine("Enter a valid number.");
+        }
+    }
+    static void ViewScores()
+    {
+        if (scores.Count == 0)
+        {
+            Console.WriteLine("No scores to show.");
+            return;
+        }
+        scores.Sort((x, y) => y.Score.CompareTo(x.Score));
+        Console.WriteLine("\n=== Scores ===");
+        scores.ForEach(score => Console.WriteLine(score));
+    }
 }
